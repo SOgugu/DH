@@ -1,4 +1,4 @@
-# PART 1A - Initial Interaction with the csv Data Files from Kaggle.com
+PART 1 - Installation of packages, uploading data, running various functions
 getwd()
 
 # loading packages -----
@@ -76,7 +76,7 @@ depression_column <- "Depressive_disorders"
 # run ggplot package
 library(ggplot2)
 
-## convert the column to numeric if necessary ???
+## convert the column to numeric if necessary
 germany_data$Depressive.disorders <- as.numeric(germany_data$Depressive.disorders..share.of.population....Sex..Both...Age..Age.standardized)
 
 # create a line plot
@@ -134,7 +134,7 @@ plot_ly(germany_data, x = ~Year, y = ~Depressive.disorders..share.of.population.
          yaxis = list(title = "Prevalence of Depressive Disorders"),
          showlegend = FALSE)%>%
   
-  # PART 1C - Plotting a Bar Graph for Depression Symptoms in 2014
+  # PART 2 - Plotting a Bar Graph for Depression Symptoms in 2014
   
   # Load libraries
   library(tidyverse)

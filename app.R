@@ -1,11 +1,11 @@
-# PART 2
+# Load packages
 
 library(shiny)
 library(tidyverse)
 library(plotly)
 library(RColorBrewer)
 
-# Load data
+# Read data
 mi_prevalence <- read.csv("mental_illness_prevalence.csv")
 
 # Rename dataset column

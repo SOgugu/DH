@@ -1,3 +1,4 @@
+# PART 1A - Initial Interaction with the csv Data Files from Kaggle.com
 getwd()
 
 # loading packages -----
@@ -5,8 +6,7 @@ library(tidyverse)
 library(here)
 library(skimr)
 library(janitor)
-library(googlesheets4)
-library(readxl)
+library(shinyalert)
 
 #reading in data -----
 dep_symptoms <- read_csv("depression_symptoms.csv")
@@ -68,17 +68,6 @@ library(ggplot2)
 # load data
 mi_prevalence <- read.csv("mental_illness_prevalence.csv")
 
-## filter data for Germany and Depressive disorders only
-germany_data <- data %>%
-  filter(Country == "Germany", Disorder == "Depressive_disorders")
-## run dplyr package to counter error due to use of filter function conflict
-library(dplyr)
-## run code again 
-## ensure data contains elements Germany and Depressive disorders
-germany_data <- mi_prevalence %>%
-  dplyr::filter("Germany", "Depressive disorders (share of population) - Sex: Both - Age: Age-standardized")
-
-# new approach ----
 # filter for Germany -----
 germany_data <- subset(mi_prevalence, Country == "Germany")
 # select Depressive disorders column -------
@@ -119,4 +108,69 @@ install.packages("gridExtra")
 library(gridExtra)
 plot(tableGrob(dep_symptoms))
 plot(tableGrob(dep_prevalence))
+
+# PART 1B - Plotting a Line Graph for Depression Trends in Germany
+# Load necessary libraries
+library(tidyverse)
+library(plotly)
+
+# Load data
+mi_prevalence <- read.csv("mental_illness_prevalence.csv")
+
+#Rename dataset column
+mi_prevalence <- mi_prevalence %>%
+  rename(Country = Entity)
+
+# Filter for Germany
+germany_data <- subset(mi_prevalence, Country == "Germany")
+
+# Convert the column to numeric if necessary
+germany_data$Depressive.disorders <- as.numeric(germany_data$Depressive.disorders..share.of.population....Sex..Both...Age..Age.standardized)
+
+# Create a line plot with Plotly
+plot_ly(germany_data, x = ~Year, y = ~Depressive.disorders..share.of.population....Sex..Both...Age..Age.standardized, type = 'scatter', mode = 'lines') %>%
+  layout(title = "Trends in Prevalence of Depressive Disorders in Germany (1990-2019)",
+         xaxis = list(title = "Year"),
+         yaxis = list(title = "Prevalence of Depressive Disorders"),
+         showlegend = FALSE)%>%
+  
+  # PART 1C - Plotting a Bar Graph for Depression Symptoms in 2014
+  
+  # Load libraries
+  library(tidyverse)
+library(plotly)
+
+# Read data
+depression_data <- read_csv("depression_symptoms.csv")
+
+# Exclude "Code" and "Year" columns
+depression_data <- depression_data[, !(colnames(depression_data) %in% c("Code", "Year"))]
+
+# Convert "Entity" column to character type
+depression_data$Entity <- as.character(depression_data$Entity)
+
+# Convert numeric columns to character
+depression_data[, c("Nearly every day", "More than half the days", "Several days", "Not at all")] <-
+  lapply(depression_data[, c("Nearly every day", "More than half the days", "Several days", "Not at all")], as.character)
+
+# Check the unique values in the "Entity" column
+unique_entities <- unique(depression_data$Entity)
+
+# Create a factor variable for "Entity" column
+depression_data$Entity <- factor(depression_data$Entity, levels = unique_entities)
+
+#Install Reshape2 package
+#Load package
+library(reshape2)
+
+# Reshape the data for plotting
+melted_data <- melt(depression_data, id.vars = "Entity", variable.name = "Frequency", value.name = "Score")
+
+# Plot the bar graph using plot_ly
+plot_ly(melted_data, x = ~Entity, y = ~Score, color = ~Frequency, type = "bar") %>%
+  layout(title = "Depression Symptoms",
+         xaxis = list(title = "Entity"),
+         yaxis = list(title = "Score"),
+         barmode = "group")
+
 
